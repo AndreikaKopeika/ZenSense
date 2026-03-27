@@ -19,7 +19,7 @@
 
 1. Download the script:
    ```bash
-   wget https://raw.githubusercontent.com/Kopeika/ZenSense/main/zensense.sh
+   wget https://raw.githubusercontent.com/AndreikaKopeika/ZenSense/refs/heads/main/zensense.sh
    chmod +x zensense.sh
    ```
 2. Run it:
