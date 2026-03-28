@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#
 # ==============================================================================
 # ZenSense - Haptics Over Bluetooth (Pro Edition)
 # A universal tool to route game audio to DualSense haptic motors via Bluetooth.
@@ -7,6 +5,8 @@
 # Script by: Kopeika
 # Core SAxense C code by: egormanga & Sdore
 # ==============================================================================
+# Licensed under the MIT License.
+
 
 set -e # Exit immediately if a command exits with a non-zero status
 
