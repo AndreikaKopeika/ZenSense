@@ -2,7 +2,7 @@
 
 **ZenSense** is an advanced automation wrapper for Linux that routes game audio to your PlayStation DualSense controller's haptic motors via Bluetooth, giving you deep, immersive rumble without a cable.
 
-> 🧠 **Core Credit:** This script is built around [SAxense](https://github.com/egormanga/SAxense) by **[egormanga](https://github.com/egormanga)** and **[Sdore](https://github.com/Sdore)**. Huge thanks to them for the reverse-engineering and C-code that makes this possible!
+> 🧠 **Core Credit:** This script is built around [SAxense](https://github.com/egormanga/SAxense) by **[egormanga](https://github.com/egormanga)**. Huge thanks to them for the reverse-engineering and C-code that makes this possible!
 
 ## ✨ Features
 - 🚀 **Fully Automated:** Installs dependencies (Arch, Ubuntu, Fedora), clones `SAxense`, and builds it automatically.
