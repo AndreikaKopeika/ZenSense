@@ -49,6 +49,11 @@ BIN_PATH=""
 DS_DEV=""
 SOX_FILTERS=""
 
+# --- Dir config ---
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zensense"
+BIN_DIR="$DATA_DIR/bin"
+BIN_PATH="$BIN_DIR/saxense"
+
 # --- Cleanup Handler ---
 
 cleanup() {
@@ -124,28 +129,50 @@ check_dependencies() {
     fi
 }
 
+
+
 # --- Task 2: SAxense Build ---
 prepare_saxense() {
-    if [ ! -d "SAxense" ] && [ ! -f "SAxense.c" ]; then
-        run_task "Cloning SAxense repository" git clone https://github.com/egormanga/SAxense.git ./SAxense
+    # 1. Если бинарник уже есть, просто проверяем права и выходим
+    if [ -f "$BIN_PATH" ]; then
+        chmod +x "$BIN_PATH"
+        return 0
     fi
 
-    if [ -f "./SAxense/SAxense" ] && [ ! -d "./SAxense/SAxense" ]; then
-        BIN_PATH="./SAxense/SAxense"
-    elif [ -f "./SAxense" ] &&[ ! -d "./SAxense" ]; then
-        BIN_PATH="./SAxense"
+    # 2. Создаем папку для бинарника
+    mkdir -p "$BIN_DIR"
+
+    # 3. Создаем временную папку для сборки
+    local BUILD_DIR
+    BUILD_DIR=$(mktemp -d)
+    
+    # Гарантируем удаление мусора при ошибке или прерывании
+    trap "rm -rf '$BUILD_DIR'" EXIT
+
+    # 4. Клонируем во временную папку
+    run_task "Cloning SAxense repository" \
+        git clone --depth 1 https://github.com/egormanga/SAxense.git "$BUILD_DIR/SAxense"
+
+    # 5. Сборка
+    if [ -f "$BUILD_DIR/SAxense/Makefile" ]; then
+        run_task "Building SAxense from source" \
+            make -C "$BUILD_DIR/SAxense"
+        # Перемещаем результат (обычно бинарник называется SAxense)
+        mv "$BUILD_DIR/SAxense/SAxense" "$BIN_PATH"
+    elif [ -f "$BUILD_DIR/SAxense/SAxense.c" ]; then
+        run_task "Compiling SAxense core" \
+            gcc -O3 "$BUILD_DIR/SAxense/SAxense.c" -o "$BIN_PATH"
+    else
+        echo "Error: Could not find source files to build!"
+        exit 1
     fi
 
-    if [ -z "$BIN_PATH" ]; then
-        if [ -f "./SAxense/Makefile" ]; then
-            run_task "Building SAxense from source" make -C SAxense
-            BIN_PATH="./SAxense/SAxense"
-        elif [ -f "./SAxense/SAxense.c" ]; then
-            run_task "Compiling SAxense core" gcc -O3 ./SAxense/SAxense.c -o ./SAxense/SAxense
-            BIN_PATH="./SAxense/SAxense"
-        fi
-    fi
+    # 6. Финальные штрихи
     chmod +x "$BIN_PATH"
+    
+    # Удаляем временную папку (сработает и trap, но лучше явно)
+    rm -rf "$BUILD_DIR"
+    trap - EXIT # Снимаем trap
 }
 
 # --- Task 3: Device Discovery ---
